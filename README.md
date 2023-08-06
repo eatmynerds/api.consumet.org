@@ -17,7 +17,7 @@
     <a href="https://discord.gg/qTPfvMxzNH">
       <img src="https://img.shields.io/discord/987492554486452315?color=7289da&label=discord&logo=discord&logoColor=7289da" alt="Discord">
     </a>
-    <a href="https://github.com/consumet-rs/api/blob/main/LICENSE">
+    <a href="https://github.com/consumet-rs/api/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/consumet/api" alt="GitHub">
   </a>
 </p>
@@ -71,7 +71,7 @@ You can add `-d` flag to run the server in detached mode.
 Please refer to the [documentation](https://docs.consumet.org). Join our [Discord server](https://discord.gg/qTPfvMxzNH) if you need any additional help or have any questions, comments, or suggestions.
 
 ## Development
-Pull requests and stars are always welcome, for bugs and features create a new [issue](https://github.com/consumet/api.consumet.org/issues). If you're brave to make make a commit to the project see [CONTRIBUTING.md](https://github.com/consumet-rs/consumet.rs/blob/main/docs/guides/contributing.md).
+Pull requests and stars are always welcome, for bugs and features create a new [issue](https://github.com/consumet/api.consumet.org/issues). If you're brave to make make a commit to the project see [CONTRIBUTING.md](https://github.com/consumet-rs/consumet.rs/blob/master/docs/guides/contributing.md).
 
 ## Showcases
 Showcases are welcome! If you have a project that uses Consumet API, please let us know by making a new discussion [here](https://github.com/consumet-rs/api.consumet.org/discussions/categories/show-and-tell) or by joining our [Discord server](https://discord.gg/qTPfvMxzNH). We will add your project to our [showcases page](https://consumet.org/showcase).

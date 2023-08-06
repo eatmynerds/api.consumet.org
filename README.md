@@ -14,13 +14,10 @@
     <a href="https://github.com/consumet/api.consumet.org/actions/workflows/docker-build.yml">
       <img src="https://github.com/consumet/api.consumet.org/actions/workflows/docker-build.yml/badge.svg" alt="Discord">
     </a>
-    <a href="https://github.com/consumet/api.consumet.org/actions/workflows/codeql-analysis.yml">
-      <img src="https://github.com/consumet/api.consumet.org/actions/workflows/codeql-analysis.yml/badge.svg" alt="Discord">
-    </a>
     <a href="https://discord.gg/qTPfvMxzNH">
       <img src="https://img.shields.io/discord/987492554486452315?color=7289da&label=discord&logo=discord&logoColor=7289da" alt="Discord">
     </a>
-    <a href="https://github.com/consumet/api/blob/master/LICENSE">
+    <a href="https://github.com/consumet-rs/api/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/consumet/api" alt="GitHub">
   </a>
 </p>

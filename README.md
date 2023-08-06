@@ -87,6 +87,6 @@ You can contact the maintainers of consumet api rsvia [email](mailto:vipershnipe
 </p>
 
 ## Related repositories
- - [Consumet.ts](https://github.com/consumet-rs/consumet.rs)
+ - [Consumet.rs](https://github.com/consumet-rs/consumet.rs)
  - [Website](https://github.com/consumet/consumet.org)
  - [Providers Status](https://github.com/consumet/providers-status)

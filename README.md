@@ -71,13 +71,13 @@ You can add `-d` flag to run the server in detached mode.
 Please refer to the [documentation](https://docs.consumet.org). Join our [Discord server](https://discord.gg/qTPfvMxzNH) if you need any additional help or have any questions, comments, or suggestions.
 
 ## Development
-Pull requests and stars are always welcome, for bugs and features create a new [issue](https://github.com/carrotshniper21/consumet-api/issues). If you're brave to make make a commit to the project see [consumet-api-rs](https://github.com/carrotshniper21/consumet-api-rs/blob/main).
+Pull requests and stars are always welcome, for bugs and features create a new [issue](https://github.com/consumet/api.consumet.org/issues). If you're brave to make make a commit to the project see [CONTRIBUTING.md](https://github.com/consumet-rs/consumet.rs/blob/main/docs/guides/contributing.md).
 
 ## Showcases
-Showcases are welcome! If you have a project that uses Consumet API Rust, please let us know by making a new discussion [here](https://github.com/consumet/api.consumet.org/discussions/categories/show-and-tell) or by joining our [Discord server](https://discord.gg/qTPfvMxzNH). We will add your project to our [showcases page](https://consumet.org/showcase).
+Showcases are welcome! If you have a project that uses Consumet API, please let us know by making a new discussion [here](https://github.com/consumet-rs/api.consumet.org/discussions/categories/show-and-tell) or by joining our [Discord server](https://discord.gg/qTPfvMxzNH). We will add your project to our [showcases page](https://consumet.org/showcase).
 
 ## Provider Request
-Make a new [issue](https://github.com/carrrotshniper21/consumet-api/issues/new?assignees=&labels=provider+request&template=provider-request.yml) with the name of the provider on the title, as well as a link to the provider in the body paragraph.
+Make a new [issue](https://github.com/consumet-rs/consumet.rs/issues/new?assignees=&labels=provider+request&template=provider-request.yml) with the name of the provider on the title, as well as a link to the provider in the body paragraph.
 
 ## Support
 You can contact the maintainers of consumet api rsvia [email](mailto:vipershniper07@gmail.com), or [join the discord server](https://discord.gg/qTPfvMxzNH) (Recommended).
@@ -87,6 +87,6 @@ You can contact the maintainers of consumet api rsvia [email](mailto:vipershnipe
 </p>
 
 ## Related repositories
- - [consumet-api-rs](https://github.com/carrotshniper21/consumet-api-rs)
+ - [Consumet.ts](https://github.com/consumet-rs/consumet.rs)
  - [Website](https://github.com/consumet/consumet.org)
  - [Providers Status](https://github.com/consumet/providers-status)

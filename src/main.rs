@@ -1,14 +1,15 @@
-use axum::{http::StatusCode, routing::get, Json, Router};
-use std::str::FromStr;
 mod models;
 mod routes;
-use models::ResponseError;
+mod utils;
+use axum::{http::StatusCode, routing::get, Json, Router};
+use std::str::FromStr;
+use log::info;
 
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
 
-    println!("Main Router initialized!");
+    utils::logger::initialize();
 
     let mut port = std::env::var("PORT").unwrap();
     port = if port.is_empty() {
@@ -16,9 +17,6 @@ async fn main() {
     } else {
         port
     };
-
-    // initialize tracing
-    tracing_subscriber::fmt::init();
 
     // build our application with a route
     let app = Router::new()
@@ -29,7 +27,7 @@ async fn main() {
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
     let addr = std::net::SocketAddr::from_str(&format!("0.0.0.0:{}", port)).unwrap();
-    println!("listening on {}!", addr);
+    info!("Server started on http://{}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
@@ -40,10 +38,10 @@ async fn home() -> (StatusCode, &'static str) {
     (StatusCode::OK, "Welcome to consumet api rust! ")
 }
 
-async fn fallback_func() -> (StatusCode, Json<ResponseError>) {
+async fn fallback_func() -> (StatusCode, Json<models::ResponseError>) {
     (
         StatusCode::NOT_FOUND,
-        Json(ResponseError {
+        Json(models::ResponseError {
             message: String::new(),
             error: String::from("page not found"),
         }),

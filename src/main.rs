@@ -2,8 +2,8 @@ mod models;
 mod routes;
 mod utils;
 use axum::{http::StatusCode, routing::get, Json, Router};
-use std::str::FromStr;
 use log::info;
+use std::str::FromStr;
 
 #[tokio::main]
 async fn main() {

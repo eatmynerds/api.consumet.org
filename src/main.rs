@@ -1,37 +1,67 @@
 mod models;
 mod routes;
 mod utils;
+
+use std::{
+    fmt::Display,
+    net::{IpAddr, Ipv4Addr, SocketAddr},
+    panic,
+    time::Duration,
+};
+
+use anyhow::{Context, Result};
 use axum::{http::StatusCode, routing::get, Json, Router};
-use log::info;
-use std::str::FromStr;
+use serde_json::json;
+use time::{format_description::well_known::Rfc3339, OffsetDateTime};
+use tokio::{
+    net::TcpListener,
+    signal::unix::{signal, SignalKind},
+    time::sleep,
+};
+use tower::ServiceBuilder;
+use tower_http::trace::{self, TraceLayer};
+use tracing::{error, info, Level};
+use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 #[tokio::main]
 async fn main() {
-    dotenv::dotenv().ok();
-
-    utils::logger::initialize();
-
-    let mut port = std::env::var("PORT").unwrap();
-    port = if port.is_empty() {
-        "8080".to_string()
-    } else {
-        port
+    let result = init_tracing();
+    if let Err(ref error) = result {
+        log_error(error);
+        return;
     };
 
-    // build our application with a route
-    let app = Router::new()
-        .route("/", get(home))
-        .nest("/movies", routes::movies::mount().await)
-        .fallback(fallback_func);
+    // Replace the default panic hook with one that uses structured logging at ERROR level.
+    panic::set_hook(Box::new(|panic| error!(%panic, "process panicked")));
 
-    // run our app with hyper
-    // `axum::Server` is a re-export of `hyper::Server`
-    let addr = std::net::SocketAddr::from_str(&format!("0.0.0.0:{}", port)).unwrap();
-    info!("Server started on http://{}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    // Run and log any error.
+    if let Err(ref error) = run().await {
+        error!(
+            error = format!("{error:#}"),
+            backtrace = %error.backtrace(),
+            "process exited with ERROR"
+        );
+    }
+}
+
+fn init_tracing() -> Result<()> {
+    tracing_subscriber::registry()
+        .with(EnvFilter::new("info"))
+        .with(fmt::layer().json().flatten_event(false))
+        .try_init()
+        .context("initialize tracing subscriber")
+}
+
+fn log_error(error: &impl Display) {
+    let now = OffsetDateTime::now_utc().format(&Rfc3339).unwrap();
+    let error = serde_json::to_string(&json!({
+        "timestamp": now,
+        "level": "ERROR",
+        "message": "process exited with ERROR",
+        "error": format!("{error:#}")
+    }));
+    // Not using `eprintln!`, because `tracing_subscriber::fmt` uses stdout by default.
+    println!("{}", error.unwrap());
 }
 
 async fn home() -> (StatusCode, &'static str) {
@@ -46,4 +76,46 @@ async fn fallback_func() -> (StatusCode, Json<models::ResponseError>) {
             error: String::from("page not found"),
         }),
     )
+}
+
+async fn shutdown_signal(shutdown_timeout: Option<Duration>) {
+    signal(SignalKind::terminate())
+        .expect("install SIGTERM handler")
+        .recv()
+        .await;
+    if let Some(shutdown_timeout) = shutdown_timeout {
+        sleep(shutdown_timeout).await;
+    }
+}
+
+async fn run() -> Result<()> {
+    dotenv::dotenv().ok();
+
+    let port = std::env::var("PORT")
+        .unwrap_or("3000".into())
+        .parse::<u16>()?;
+
+    info!("Server started on http://localhost:{:#?}", port);
+
+    // build our application with a route
+    let app = Router::new()
+        .route("/", get(home))
+        .nest("/movies", routes::movies::mount().await)
+        .layer(
+            ServiceBuilder::new().layer(
+                TraceLayer::new_for_http()
+                    .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
+                    .on_response(trace::DefaultOnResponse::new().level(Level::INFO)),
+            ),
+        )
+        .fallback(fallback_func);
+
+    let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), port);
+
+    let listener = TcpListener::bind(&addr).await.context("bind TcpListener")?;
+
+    axum::serve(listener, app.into_make_service())
+        .with_graceful_shutdown(shutdown_signal(None))
+        .await
+        .context("run server")
 }

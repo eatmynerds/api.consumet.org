@@ -1,6 +1,6 @@
 use crate::models::{FlixhqInfo, FlixhqSearch, FlixhqServer, FlixhqSource, ProviderInfo};
 use axum::{extract::Query, http::StatusCode, routing::get, Json, Router};
-use consumet_rs::{
+use consumet::{
     models::{IEpisodeServer, IMovieResult, ISearch, ISource},
     providers::movies::{FlixHQ, FlixHQInfo},
 };

@@ -1,9 +1,36 @@
-use crate::models::{FlixhqInfo, FlixhqSearch, FlixhqServer, FlixhqSource, ProviderInfo};
+use crate::models::ProviderInfo;
 use axum::{extract::Query, http::StatusCode, routing::get, Json, Router};
 use consumet::{
-    models::{IEpisodeServer, IMovieResult, ISearch, ISource},
-    providers::movies::{FlixHQ, FlixHQInfo},
+    models::StreamingServers,
+    providers::movies::{
+        FlixHQ, FlixHQInfo, FlixHQResult, FlixHQSearchResults, FlixHQServers, FlixHQSources,
+    },
 };
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+pub struct FlixHQSearch {
+    pub query: String,
+    pub page: Option<usize>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct FlixHQMediaInfo {
+    pub id: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct FlixHQServer {
+    pub episode_id: String,
+    pub media_id: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct FlixHQSource {
+    pub episode_id: String,
+    pub media_id: String,
+    pub server: Option<StreamingServers>,
+}
 
 pub async fn mount() -> Router {
     Router::new()
@@ -36,8 +63,8 @@ pub async fn flixhq_home() -> (StatusCode, Json<ProviderInfo>) {
 }
 
 pub async fn flixhq_search(
-    route_params: Query<FlixhqSearch>,
-) -> (StatusCode, Json<ISearch<IMovieResult>>) {
+    route_params: Query<FlixHQSearch>,
+) -> (StatusCode, Json<FlixHQSearchResults>) {
     let search = FlixHQ
         .search(&route_params.query, route_params.page)
         .await
@@ -46,14 +73,13 @@ pub async fn flixhq_search(
     (StatusCode::OK, Json(search))
 }
 
-pub async fn flixhq_info(route_params: Query<FlixhqInfo>) -> (StatusCode, Json<FlixHQInfo>) {
+pub async fn flixhq_info(route_params: Query<FlixHQMediaInfo>) -> (StatusCode, Json<FlixHQInfo>) {
     let info = FlixHQ.info(&route_params.id).await.unwrap();
+
     (StatusCode::OK, Json(info))
 }
 
-pub async fn flixhq_server(
-    route_params: Query<FlixhqServer>,
-) -> (StatusCode, Json<Vec<IEpisodeServer>>) {
+pub async fn flixhq_server(route_params: Query<FlixHQServer>) -> (StatusCode, Json<FlixHQServers>) {
     let server = FlixHQ
         .servers(&route_params.episode_id, &route_params.media_id)
         .await
@@ -62,7 +88,9 @@ pub async fn flixhq_server(
     (StatusCode::OK, Json(server))
 }
 
-pub async fn flixhq_sources(route_params: Query<FlixhqSource>) -> (StatusCode, Json<ISource>) {
+pub async fn flixhq_sources(
+    route_params: Query<FlixHQSource>,
+) -> (StatusCode, Json<FlixHQSources>) {
     let sources = FlixHQ
         .sources(
             &route_params.episode_id,
@@ -75,25 +103,25 @@ pub async fn flixhq_sources(route_params: Query<FlixhqSource>) -> (StatusCode, J
     (StatusCode::OK, Json(sources))
 }
 
-pub async fn flixhq_recent_movies() -> (StatusCode, Json<Vec<IMovieResult>>) {
+pub async fn flixhq_recent_movies() -> (StatusCode, Json<Vec<FlixHQResult>>) {
     let recent_movies = FlixHQ.recent_movies().await.unwrap();
 
     (StatusCode::OK, Json(recent_movies))
 }
 
-pub async fn flixhq_recent_shows() -> (StatusCode, Json<Vec<IMovieResult>>) {
+pub async fn flixhq_recent_shows() -> (StatusCode, Json<Vec<FlixHQResult>>) {
     let recent_shows = FlixHQ.recent_shows().await.unwrap();
 
     (StatusCode::OK, Json(recent_shows))
 }
 
-pub async fn flixhq_trending_movies() -> (StatusCode, Json<Vec<IMovieResult>>) {
+pub async fn flixhq_trending_movies() -> (StatusCode, Json<Vec<FlixHQResult>>) {
     let trending_movies = FlixHQ.recent_shows().await.unwrap();
 
     (StatusCode::OK, Json(trending_movies))
 }
 
-pub async fn flixhq_trending_shows() -> (StatusCode, Json<Vec<IMovieResult>>) {
+pub async fn flixhq_trending_shows() -> (StatusCode, Json<Vec<FlixHQResult>>) {
     let trending_shows = FlixHQ.trending_shows().await.unwrap();
 
     (StatusCode::OK, Json(trending_shows))

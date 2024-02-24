@@ -32,13 +32,9 @@ COPY --from=builder /consumet-api /usr/local/bin
 
 RUN chown appuser /usr/local/bin/consumet-api
 
-COPY --from=builder /app/config /opt/consumet-api/config
-
-RUN chown -R appuser /opt/consumet-api
-
 USER appuser
 
-WORKDIR /opt/consumet-api
+WORKDIR /usr/local/bin
 
 ENV RUST_LOG=INFO
 

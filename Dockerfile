@@ -13,7 +13,6 @@ COPY . .
 RUN \
   --mount=type=cache,target=/app/target/ \
   --mount=type=cache,target=/usr/local/cargo/registry/ \
-  rustup default nightly && \
   cargo build --release && \
   cp ./target/release/consumet-api /
 

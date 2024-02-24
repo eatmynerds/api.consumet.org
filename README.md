@@ -45,7 +45,6 @@ Run the following command to clone the repository, and install the dependencies.
 ```sh
 $ git clone https://github.com/eatmynerds/api.consumet.org
 $ cd api.consumet.org
-$ rustup default nightly
 $ cargo build --release
 ```
 

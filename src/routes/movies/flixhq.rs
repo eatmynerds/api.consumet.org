@@ -55,7 +55,7 @@ pub async fn flixhq_home() -> (StatusCode, Json<ProviderInfo>) {
             routes: vec![
                 String::from("/search"),
                 String::from("/info"),
-                String::from("/servers")
+                String::from("/servers"),
                 String::from("/sources"),
             ],
             documentation: String::from("https://docs.consumet.org/#tag/flixhq"),

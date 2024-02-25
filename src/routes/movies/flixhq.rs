@@ -36,13 +36,13 @@ pub async fn mount() -> Router {
     Router::new()
         .route("/", get(flixhq_home))
         .route("/search", get(flixhq_search))
+        .route("/info", get(flixhq_info))
+        .route("/servers", get(flixhq_server))
+        .route("/sources", get(flixhq_sources))
         .route("/recent-shows", get(flixhq_recent_shows))
         .route("/recent-movies", get(flixhq_recent_movies))
         .route("/trending-shows", get(flixhq_trending_shows))
         .route("/trending-movies", get(flixhq_trending_movies))
-        .route("/info", get(flixhq_info))
-        .route("/servers", get(flixhq_server))
-        .route("/sources", get(flixhq_sources))
 }
 
 pub async fn flixhq_home() -> (StatusCode, Json<ProviderInfo>) {
@@ -57,6 +57,10 @@ pub async fn flixhq_home() -> (StatusCode, Json<ProviderInfo>) {
                 String::from("/info"),
                 String::from("/servers"),
                 String::from("/sources"),
+                String::from("/recent-shows"),
+                String::from("/recent-movies"),
+                String::from("/trending-shows"),
+                String::from("/trending-movies"),
             ],
             documentation: String::from("https://docs.consumet.org/#tag/flixhq"),
         }),
@@ -103,6 +107,11 @@ pub async fn flixhq_sources(
 
     (StatusCode::OK, Json(sources))
 }
+pub async fn flixhq_recent_shows() -> (StatusCode, Json<Vec<FlixHQResult>>) {
+    let recent_shows = FlixHQ.recent_shows().await.unwrap();
+
+    (StatusCode::OK, Json(recent_shows))
+}
 
 pub async fn flixhq_recent_movies() -> (StatusCode, Json<Vec<FlixHQResult>>) {
     let recent_movies = FlixHQ.recent_movies().await.unwrap();
@@ -110,20 +119,14 @@ pub async fn flixhq_recent_movies() -> (StatusCode, Json<Vec<FlixHQResult>>) {
     (StatusCode::OK, Json(recent_movies))
 }
 
-pub async fn flixhq_recent_shows() -> (StatusCode, Json<Vec<FlixHQResult>>) {
-    let recent_shows = FlixHQ.recent_shows().await.unwrap();
+pub async fn flixhq_trending_shows() -> (StatusCode, Json<Vec<FlixHQResult>>) {
+    let trending_shows = FlixHQ.trending_shows().await.unwrap();
 
-    (StatusCode::OK, Json(recent_shows))
+    (StatusCode::OK, Json(trending_shows))
 }
 
 pub async fn flixhq_trending_movies() -> (StatusCode, Json<Vec<FlixHQResult>>) {
     let trending_movies = FlixHQ.recent_shows().await.unwrap();
 
     (StatusCode::OK, Json(trending_movies))
-}
-
-pub async fn flixhq_trending_shows() -> (StatusCode, Json<Vec<FlixHQResult>>) {
-    let trending_shows = FlixHQ.trending_shows().await.unwrap();
-
-    (StatusCode::OK, Json(trending_shows))
 }

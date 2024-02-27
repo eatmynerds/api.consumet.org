@@ -10,7 +10,14 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-use axum::{http::StatusCode, routing::get, Json, Router};
+use axum::{
+    extract::{ConnectInfo, Request},
+    http::StatusCode,
+    middleware::{from_fn_with_state, Next},
+    response::Response,
+    routing::get,
+    Json, Router,
+};
 use serde_json::json;
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 use tokio::{
@@ -44,12 +51,14 @@ async fn main() {
     }
 }
 
-fn init_tracing() -> Result<()> {
+fn init_tracing() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::registry()
         .with(EnvFilter::new("info"))
-        .with(fmt::layer().json().flatten_event(false))
+        .with(fmt::layer().json())
         .try_init()
-        .context("initialize tracing subscriber")
+        .context("initialize tracing subscriber")?;
+
+    Ok(())
 }
 
 fn log_error(error: &impl Display) {
@@ -101,6 +110,7 @@ async fn run() -> Result<()> {
     let app = Router::new()
         .route("/", get(home))
         .nest("/movies", routes::movies::mount().await)
+        .route_layer(from_fn_with_state("state", requests_stats))
         .layer(
             ServiceBuilder::new().layer(
                 TraceLayer::new_for_http()
@@ -114,8 +124,20 @@ async fn run() -> Result<()> {
 
     let listener = TcpListener::bind(&addr).await.context("bind TcpListener")?;
 
-    axum::serve(listener, app.into_make_service())
-        .with_graceful_shutdown(shutdown_signal(None))
-        .await
-        .context("run server")
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .with_graceful_shutdown(shutdown_signal(None))
+    .await
+    .context("run server")
+}
+
+async fn requests_stats(
+    ConnectInfo(addr): ConnectInfo<SocketAddr>,
+    req: Request,
+    next: Next,
+) -> Response {
+    info!("{}:{}", addr.ip(), addr.port());
+    next.run(req).await
 }
